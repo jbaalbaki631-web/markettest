@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Mobile Marketplace</title>
+    <style>
+        :root {
+            --primary: #2563eb; --success: #22c55e; --warning: #f59e0b;
+            --danger: #ef4444; --dark: #0f172a; --slate: #64748b; --light: #f8fafc;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background-color: #f1f5f9; 
+            margin: 0; 
+            padding: 15px; 
+            color: var(--dark); 
+        }
+
+        .view { display: none; max-width: 1100px; margin: 20px auto; animation: fadeIn 0.4s; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Home Gallery */
+        .marketplace-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
+
+        .product-card { 
+            background: white; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+            cursor: pointer; 
+            transition: 0.3s;
+        }
+
+        .product-card:hover { transform: translateY(-5px); }
+        .card-img { width: 100%; height: 240px; object-fit: cover; }
+        .card-body { padding: 20px; text-align: center; }
+
+        /* Detail Layout - Responsive */
+        .detail-grid { 
+            display: grid; 
+            grid-template-columns: 1.2fr 1fr; 
+            gap: 30px; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid { grid-template-columns: 1fr; padding: 20px; }
+            .auction-side { border-left: none !important; padding-left: 0 !important; border-top: 1px solid #f1f5f9; padding-top: 30px; }
+        }
+
+        .product-info h1 { margin: 10px 0; font-size: 1.8rem; }
+        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .spec-tag { background: var(--light); padding: 8px; border-radius: 10px; font-size: 0.8rem; border: 1px solid #e2e8f0; }
+        .main-img { width: 100%; border-radius: 15px; margin-bottom: 10px; }
+
+        /* Timer UI */
+        .auction-side { display: flex; flex-direction: column; align-items: center; padding-left: 30px; border-left: 1px solid #f1f5f9; }
+        .timer-wrap { position: relative; width: 140px; height: 140px; margin-bottom: 20px; }
+        .timer-svg { transform: rotate(-90deg); width: 140px; height: 140px; }
+        .timer-bg { fill: none; stroke: #f1f5f9; stroke-width: 8; }
+        .timer-progress { fill: none; stroke: var(--success); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 440; transition: stroke-dashoffset 0.1s linear; }
+        .timer-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        
+        /* Bidding Controls */
+        .price-display { text-align: center; margin-bottom: 15px; }
+        .price-display h2 { font-size: 2.8rem; margin: 5px 0; font-weight: 800; }
+        
+        .chips { display: flex; gap: 8px; margin-bottom: 15px; width: 100%; }
+        .chip { flex: 1; background: var(--light); border: 1px solid #e2e8f0; padding: 12px 5px; border-radius: 10px; cursor: pointer; font-weight: bold; text-align: center; font-size: 0.9rem; transition: 0.2s; }
+        .chip:hover { background: #eee; }
+
+        .btn { width: 100%; padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; font-size: 1rem; margin-bottom: 8px; transition: 0.2s; }
+        .btn-primary { background: var(--dark); color: white; }
+        .btn-bid { background: var(--primary); color: white; }
+        .btn-buyout { background: transparent; border: 2px solid var(--dark); color: var(--dark); }
+        .btn-share { background: #e2e8f0; color: var(--dark); font-size: 0.9rem; }
+
+        .feed { width: 100%; margin-top: 20px; background: var(--light); border-radius: 12px; padding: 15px; max-height: 150px; overflow-y: auto; }
+        .feed-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.8rem; }
+        
+        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .back-link { cursor: pointer; color: var(--primary); font-weight: 600; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <div id="home-view" class="view active">
+        <h2 style="text-align: center; margin-bottom: 30px;">Premium Marketplace</h2>
+        <div class="marketplace-grid">
+            <div class="product-card" onclick="showView('fixed')">
+                <img src="fixed.jpg" alt="White Shoes" class="card-img">
+                <div class="card-body">
+                    <span style="color: var(--primary); font-weight: 800; font-size: 0.65rem;">RETAIL</span>
+                    <h3>Cloud-Walk Shoes</h3>
+                    <p style="font-weight: 800; font-size: 1.2rem; margin: 5px 0;">$185.00</p>
+                </div>
+            </div>
+            <div class="product-card" onclick="showView('auction')">
+                <img src="auction.jpg" alt="Leica Camera" class="card-img">
+                <div class="card-body">
+                    <span style="color: var(--danger); font-weight: 800; font-size: 0.65rem;">LIVE AUCTION</span>
+                    <h3>Leica M3 Camera</h3>
+                    <p id="home-bid" style="font-weight: 800; font-size: 1.2rem; margin: 5px 0;">Current: $1,200</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fixed-view" class="view">
+        <div class="nav-bar">
+            <div class="back-link" onclick="goHome()">← Back</div>
+            <button class="btn-share" style="width: auto; padding: 5px 15px; border-radius: 20px;" onclick="shareItem('Cloud-Walk Shoes')">Share</button>
+        </div>
+        <div class="detail-grid">
+            <div class="product-info">
+                <img src="fixed.jpg" class="main-img">
+                <h1>Cloud-Walk Sneakers</h1>
+                <p style="color: var(--slate); font-size: 0.95rem;">Elite white leather sneakers. Minimalist design with maximum durability and orthotic comfort.</p>
+                <div class="specs-grid">
+                    <div class="spec-tag">Color: Triple White</div>
+                    <div class="spec-tag">Material: Leather</div>
+                </div>
+            </div>
+            <div class="auction-side" style="justify-content: center; border: none;">
+                <div class="price-display">
+                    <h2 style="font-size: 3.5rem;">$185.00</h2>
+                </div>
+                <button class="btn btn-primary" onclick="alert('Added to cart!')">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="auction-view" class="view">
+        <div class="nav-bar">
+            <div class="back-link" onclick="goHome()">← Back</div>
+            <button class="btn-share" style="width: auto; padding: 5px 15px; border-radius: 20px;" onclick="shareItem('Leica M3 Auction')">Share</button>
+        </div>
+        <div class="detail-grid">
+            <div class="product-info">
+                <img src="auction.jpg" class="main-img">
+                <h1>Leica M3 Edition</h1>
+                <p style="color: var(--slate); font-size: 0.95rem;">1957 mechanical masterpiece. Meticulously maintained rangefinder.</p>
+                <div class="specs-grid">
+                    <div class="spec-tag">Condition: 9.5</div>
+                    <div class="spec-tag">Year: 1957</div>
+                </div>
+            </div>
+            <div class="auction-side">
+                <div class="timer-wrap">
+                    <svg class="timer-svg">
+                        <circle class="timer-bg" cx="70" cy="70" r="65"></circle>
+                        <circle id="timer-bar" class="timer-progress" cx="70" cy="70" r="65"></circle>
+                    </svg>
+                    <div class="timer-label">
+                        <span id="time-val" style="font-size: 1.5rem; font-weight: 800;">02:00</span>
+                    </div>
+                </div>
+
+                <div class="price-display">
+                    <span>High Bid</span>
+                    <h2 id="bid-val" style="font-size: 2.5rem;">$1,200</h2>
+                </div>
+
+                <div class="chips">
+                    <div class="chip" onclick="quickBid(50)">+$50</div>
+                    <div class="chip" onclick="quickBid(100)">+$100</div>
+                    <div class="chip" onclick="quickBid(250)">+$250</div>
+                </div>
+
+                <button class="btn btn-bid" onclick="placeManual()">Place Bid</button>
+                <button class="btn btn-buyout" onclick="buyout()">Buy Now $3,500</button>
+
+                <div class="feed" id="bid-history">
+                    <div class="feed-item"><span>Live</span><strong>$1,200</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPrice = 1200;
+        let totalTime = 120000;
+        let endTime = Date.now() + totalTime;
+        let timerInt;
+
+        function showView(v) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(v + '-view').classList.add('active');
+            window.scrollTo(0,0);
+            if(v === 'auction') startAuction();
+        }
+
+        function goHome() {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById('home-view').classList.add('active');
+            clearInterval(timerInt);
+        }
+
+        function startAuction() {
+            clearInterval(timerInt);
+            timerInt = setInterval(() => {
+                const now = Date.now();
+                const diff = endTime - now;
+                if(diff <= 0) { endAuction(); return; }
+                updateUI(diff);
+                if(Math.random() < 0.003) botAction();
+            }, 100);
+        }
+
+        function updateUI(ms) {
+            const bar = document.getElementById('timer-bar');
+            const val = document.getElementById('time-val');
+            const sec = Math.floor(ms / 1000);
+            bar.style.strokeDashoffset = 440 - (440 * (ms / totalTime));
+            
+            if(sec > 60) {
+                val.innerText = Math.floor(sec/60) + ":" + (sec%60).toString().padStart(2, '0');
+                bar.style.stroke = "var(--success)";
+            } else if (sec > 15) {
+                val.innerText = sec + "s";
+                bar.style.stroke = "var(--warning)";
+            } else {
+                val.innerText = (ms/1000).toFixed(1);
+                bar.style.stroke = (Math.floor(ms/100) % 2 === 0) ? "var(--danger)" : "black";
+            }
+        }
+
+        function quickBid(n) { processBid("You", currentPrice + n); }
+        function placeManual() {
+            let b = prompt("Enter bid:");
+            if(b && parseInt(b) > currentPrice) processBid("You", parseInt(b));
+        }
+        function buyout() { alert("Sold!"); location.reload(); }
+
+        function processBid(user, amt) {
+            if(amt >= 3500) { buyout(); return; }
+            currentPrice = amt;
+            document.getElementById('bid-val').innerText = `$${amt.toLocaleString()}`;
+            document.getElementById('home-bid').innerText = `Current: $${amt.toLocaleString()}`;
+            
+            // Popcorn Rule (30s)
+            if((endTime - Date.now()) < 30000) {
+                endTime += 20000;
+                totalTime += 20000;
+            }
+
+            const item = document.createElement('div');
+            item.className = 'feed-item';
+            item.innerHTML = `<span>${user}</span><strong>$${amt.toLocaleString()}</strong>`;
+            document.getElementById('bid-history').prepend(item);
+        }
+
+        function botAction() { processBid("Global_User", currentPrice + 50); }
+
+        function endAuction() {
+            clearInterval(timerInt);
+            document.getElementById('time-val').innerText = "SOLD";
+            document.getElementById('timer-bar').style.stroke = "#cbd5e1";
+        }
+
+        function shareItem(title) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: 'Check out this ' + title + ' on our marketplace!',
+                    url: window.location.href
+                });
+            } else {
+                alert('Link copied to clipboard: ' + window.location.href);
+            }
+        }
+    </script>
+</body>
+</html>
